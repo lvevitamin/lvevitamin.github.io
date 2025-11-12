@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>幸运转盘抽奖</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- 弹窗 -->
+    <div class="modal-overlay" id="modal">
+        <div class="modal lottery-modal">
+            <div class="modal-header">
+                <div class="modal-title">
+                    <div class="modal-icon">🎁</div>
+                    <span>幸运大转盘抽奖</span>
+                </div>
+                <button class="modal-close" onclick="closeModal()">✕</button>
+            </div>
+            
+            <div class="lottery-container" id="lotteryContainer">
+                <h2 class="lottery-title">幸运大转盘</h2>
+                <p class="lottery-subtitle">点击下方按钮开始抽奖</p>
+                
+                <!-- 转盘 -->
+                <div class="wheel-container">
+                    <div class="wheel-pointer"></div>
+                    <div class="wheel" id="wheel">
+                        <!-- 所有区域都显示特等奖 -->
+                        <div class="segment segment-1" style="--i:0;"><span>谢谢参与</span></div>
+                        <div class="segment segment-2" style="--i:1;"><span>一等奖</span></div>
+                        <div class="segment segment-3" style="--i:2;"><span>二等奖</span></div>
+                        <div class="segment segment-4" style="--i:3;"><span>三等奖</span></div>
+                        <div class="segment segment-5" style="--i:4;"><span>特等奖</span></div>
+                    </div>
+                    <div class="wheel-center">
+                        <div class="wheel-center-text">🎯</div>
+                    </div>
+                </div>
+                
+                <div class="prize-result" id="prizeResult">
+                    <div class="prize-result-text">🎉 恭喜中奖：特等奖！🎉</div>
+                </div>
+            </div>
+            
+            <div class="modal-footer">
+                <button class="modal-button" id="lotteryButton" onclick="startLottery()">立即抽奖</button>
+                <button class="modal-button claim-button" id="claimButton" onclick="claimPrize()" style="display: none;">领取奖品</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 主内容 -->
+    <div class="content" id="content">
+        <div class="image-container">
+            <img src="qt.gif" alt="图片" class="prank-image">
+        </div>
+        <div class="message">
+            <b>
+                <p>想什么呢？</p>
+                <p>逗你玩的，嘻嘻🤣</p>
+            </b>
+        </div>
+    </div>
+
+    <audio id="prankAudio" preload="auto">
+        <source src="https://sf5-hl-cdn-tos.douyinstatic.com/obj/ies-music/7537318707513625363.mp3" type="audio/mpeg">
+    </audio>
+
+    <div class="more-ball" onclick="window.open('weixin://dl/business/?appid=wx2e4f9bd7460719b7&path=pages/index/index&query=channel', '_blank')">
+        更多
+    </div>
+
+    <script>
+        // 确保100%中特等奖的JavaScript
+        let isSpinning = false;
+
+        window.onload = function() {
+            const modal = document.getElementById('modal');
+            modal.style.display = 'flex';
+        };
+
+        function startLottery() {
+            if (isSpinning) return;
+            
+            const wheel = document.getElementById('wheel');
+            const lotteryButton = document.getElementById('lotteryButton');
+            const prizeResult = document.getElementById('prizeResult');
+            const claimButton = document.getElementById('claimButton');
+            
+            lotteryButton.disabled = true;
+            lotteryButton.textContent = '抽奖中...';
+            isSpinning = true;
+            
+            // 100%指向特等奖的旋转计算
+            // 转5圈 + 随机停在特等奖区域
+            const fullCircles = 5;
+            // 所有区域都是特等奖，所以随便转都会停在特等奖
+            const randomStop = Math.floor(Math.random() * 72); // 0-71度随机
+            const totalRotation = fullCircles * 360 + randomStop;
+            
+            wheel.style.transition = 'transform 3s cubic-bezier(0.16, 0.89, 0.25, 1)';
+            wheel.style.transform = `rotate(${totalRotation}deg)`;
+            
+            setTimeout(() => {
+                prizeResult.innerHTML = '<div class="prize-result-text">🎉 恭喜中奖：特等奖！🎉</div>';
+                prizeResult.classList.add('show');
+                claimButton.style.display = 'block';
+                lotteryButton.style.display = 'none';
+                isSpinning = false;
+            }, 3000);
+        }
+
+        function claimPrize() {
+            const modal = document.getElementById('modal');
+            const content = document.getElementById('content');
+            
+            modal.classList.add('hidden');
+            setTimeout(() => {
+                modal.style.display = 'none';
+                content.classList.add('show');
+                
+                const audio = document.getElementById('prankAudio');
+                audio.play().catch(e => {
+                    console.log('音频播放失败:', e);
+                });
+            }, 300);
+        }
+
+        function closeModal() {
+            claimPrize();
+        }
+    </script>
+</body>
+</html>
